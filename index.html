@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+
+    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.0"></script>
+    <link
+      href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="http://unpkg.com/view-design/dist/styles/iview.css"
+    />
+    <script
+      type="text/javascript"
+      src="http://vuejs.org/js/vue.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="http://unpkg.com/view-design/dist/iview.min.js"
+    ></script>
+  </head>
+
+  <body>
+    <style>
+      .first-section {
+        padding-left: 10px;
+      }
+      li {
+        list-style: none;
+      }
+    </style>
+
+    <div id="app">
+      <section class="first-section">
+        <ul v-for="item in testList">
+          <li>name:{{item.name}}</li>
+          <li>age:{{item.age}}</li>
+          <li>sex:{{item.sex}}</li>
+          <button type="button" class="btn btn-info" @click="editClick(item)">
+            修改
+          </button>
+          <button type="button" class="btn btn-danger" @click="deleteClick(item)">删除</button>
+        </ul>
+        <ul>
+          <br />
+          <button type="button" class="btn btn-primary">增加</button>
+        </ul>
+      </section>
+      <section>
+        <li>userName: {{userMsg.name}}</li>
+        <li>pwd: {{userMsg.pass}}</li>
+      </section>
+
+      <Modal v-model="modalShow" title="修改">
+        <input>name：{{editList.name}}</input>
+        <p>age:{{editList.age}}</p>
+        <p>sex:{{editList.sex}}</p>
+      </Modal>
+    </div>
+
+    <script>
+      var app = new Vue({
+        el: "#app",
+        data() {
+          return {
+            testList: [],
+            userMsg: {},
+            modalShow: false,
+            editList: []
+          };
+        },
+        computed: {},
+        methods: {
+          editClick(item) {
+            this.editList = item;
+            this.modalShow = true;
+          },
+          getTest() {
+            let vm = this;
+            $.ajax({
+              type: "get",
+              url: "http://localhost:3001/123",
+              success: function(data) {
+                console.log(data);
+                vm.testList = data;
+              },
+              error: function(err) {
+                console.log(err);
+              }
+            });
+          },
+          postTest() {
+            let vm = this;
+            $.ajax({
+              type: "post",
+              url: "http://localhost:3001/wdltest",
+              data: { name: "wdl", pass: "123" },
+              success: function(data) {
+                console.log(data);
+                vm.userMsg = data;
+              },
+              error: function(err) {
+                console.log(err);
+              }
+            });
+          },
+          deleteClick(item){
+             let vm = this;
+              $.ajax({
+                  type: "post",
+                  url: "http://localhost:3001/delUser",
+                  data: { id:item.id },
+                  success: function (data) {
+                      console.log(data);
+                  },
+                  error: function (err) {
+                      console.log(err);
+                  }
+              });
+          }
+        },
+
+        mounted: function() {
+          this.getTest();
+          this.postTest();
+        }
+      });
+    </script>
+  </body>
+</html>
