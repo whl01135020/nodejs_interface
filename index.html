@@ -39,6 +39,7 @@
     </style>
 
     <div id="app">
+      <input type="text" placeholder="请输入名字" v-model="searchName"><button type="button" @click="searchClick">查询</button>
       <section class="first-section">
         <ul v-for="item in testList">
           <li>name:{{item.name}}</li>
@@ -51,7 +52,7 @@
         </ul>
         <ul>
           <br />
-          <button type="button" class="btn btn-primary">增加</button>
+          <button type="button" class="btn btn-primary"  @click="addClick">增加</button>
         </ul>
       </section>
       <section>
@@ -59,11 +60,19 @@
         <li>pwd: {{userMsg.pass}}</li>
       </section>
 
-      <Modal v-model="modalShow" title="修改">
-        <input>name：{{editList.name}}</input>
-        <p>age:{{editList.age}}</p>
-        <p>sex:{{editList.sex}}</p>
-      </Modal>
+      <Modal v-model="modalShow" title="修改" 
+        @on-ok="editSubmit">
+        <span>name:</span><input type="text" v-model="editParam.name"></input><br>
+        <span>age:</span><input  type="text" v-model="editParam.age"></input><br>
+        <span>sex:</span><input  type="text" v-model="editParam.sex"></input>
+      </Modal> 
+      <Modal v-model="addModalShow" title="新增" 
+       @on-ok="addSubmit">
+        <!-- <span>id:</span><input  type="text" v-model="addParam.id"></input><br><br> -->
+        <span>name:</span><input  type="text" v-model="addParam.name"></input ><br><br>
+        <span>age:</span><input   type="text" v-model="addParam.age"></input ><br><br>
+        <span>sex:</span><input   type="text" v-model="addParam.sex"></input >
+      </Modal> 
     </div>
 
     <script>
@@ -74,38 +83,22 @@
             testList: [],
             userMsg: {},
             modalShow: false,
-            editList: []
+            editParam:{},
+            addModalShow:false,
+            addParam:{},
+            searchName:''
           };
         },
         computed: {},
         methods: {
-          editClick(item) {
-            this.editList = item;
-            this.modalShow = true;
-          },
-          getTest() {
-            let vm = this;
-            $.ajax({
-              type: "get",
-              url: "http://localhost:3001/123",
-              success: function(data) {
-                console.log(data);
-                vm.testList = data;
-              },
-              error: function(err) {
-                console.log(err);
-              }
-            });
-          },
-          postTest() {
-            let vm = this;
+          searchClick(){
+            let vm= this;
             $.ajax({
               type: "post",
-              url: "http://localhost:3001/wdltest",
-              data: { name: "wdl", pass: "123" },
-              success: function(data) {
-                console.log(data);
-                vm.userMsg = data;
+              data:{name:vm.searchName},
+              url: "http://localhost:3001/search",
+              success: function(res) {
+                vm.testList=res;
               },
               error: function(err) {
                 console.log(err);
@@ -116,21 +109,73 @@
              let vm = this;
               $.ajax({
                   type: "post",
-                  url: "http://localhost:3001/delUser",
+                  url: "http://localhost:3001/delete",
                   data: { id:item.id },
-                  success: function (data) {
-                      console.log(data);
+                  success: function (res) {
+                    console.log(res);
+                    vm.getDataList();
                   },
                   error: function (err) {
                       console.log(err);
                   }
               });
+          },
+          getDataList(){
+            let vm = this;
+            $.ajax({
+              type: "get",
+              url: "http://localhost:3001/getDataList",
+              success: function(res) {
+                console.log("获取数据接口",res);
+                vm.testList = res.data;
+              },
+              error: function(err) {
+                console.log(err);
+              }
+            });
+          },
+          addClick(){
+            this.addModalShow = true;
+          },
+          addSubmit(){
+            let vm= this;
+            $.ajax({
+              type: "post",
+              data:vm.addParam,
+              url: "http://localhost:3001/add",
+              success: function(res) {
+                vm.addModalShow = false;
+                vm.getDataList();
+              },
+              error: function(err) {
+                console.log(err);
+              }
+            });
+          },
+          editClick(item){
+            this.editParam  = item;
+            this.modalShow = true;
+          },
+          editSubmit(){
+            let vm = this;
+            $.ajax({
+              type: "post",
+              data: vm.editParam,
+              url: "http://localhost:3001/update",
+              success: function(res) {
+                vm.getDataList();
+                vm.modalShow = false;
+              },
+              error: function(err) {
+                console.log(err);
+              }
+            });
           }
+
         },
 
         mounted: function() {
-          this.getTest();
-          this.postTest();
+          this.getDataList();
         }
       });
     </script>
