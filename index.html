@@ -8,11 +8,10 @@
 
     <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.0"></script>
-    <link
-      href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <link
       rel="stylesheet"
       type="text/css"
@@ -30,48 +29,73 @@
 
   <body>
     <style>
+      #app{
+       margin: 15px;
+       text-align: center;
+      }
       .first-section {
         padding-left: 10px;
       }
       li {
         list-style: none;
       }
+      .title-h1{
+        margin:10px auto;
+      }
     </style>
 
     <div id="app">
-      <input type="text" placeholder="请输入名字" v-model="searchName"><button type="button" @click="searchClick">查询</button>
+      <h1 class="title-h1">nodejs + mysql + express + vue 实现增删改查功能</h1>
+      
+      <form class="form-inline">
+        <div class="form-group mx-sm-3 mb-2">
+          <label for="inputPassword2" class="sr-only">Name</label>
+          <input type="password" class="form-control" placeholder="请输入姓名" v-model="searchName">
+        </div>
+        <button type="submit" class="btn btn-primary mb-2"  @click="searchClick">查询</button> &nbsp;&nbsp;
+        <button type="button" class="btn btn-primary mb-2" @click="addClick">增加</button>
+      </form>
       <section class="first-section">
-        <ul v-for="item in testList">
-          <li>name:{{item.name}}</li>
-          <li>age:{{item.age}}</li>
-          <li>sex:{{item.sex}}</li>
-          <button type="button" class="btn btn-info" @click="editClick(item)">
-            修改
-          </button>
-          <button type="button" class="btn btn-danger" @click="deleteClick(item)">删除</button>
-        </ul>
-        <ul>
-          <br />
-          <button type="button" class="btn btn-primary"  @click="addClick">增加</button>
-        </ul>
-      </section>
-      <section>
-        <li>userName: {{userMsg.name}}</li>
-        <li>pwd: {{userMsg.pass}}</li>
+        <table class="table table-bordered" style="width: 50rem">
+          <thead>
+            <th>序号</th>
+            <th>姓名</th>
+            <th>年龄</th>
+            <th>性别</th>
+            <th>操作</th>
+          </thead>
+          <tbody>
+            <tr v-for="(item,index) in testList">
+              <td>{{index}}</td>
+              <td>{{item.name}}</td>
+              <td>{{item.age}}</td>
+              <td>{{item.sex}}</td>
+              <td>
+                <button type="button" class="btn btn-info"  @click="editClick(item)">修改</button>
+                <button type="button" class="btn btn-danger" @click="deleteClick(item)">删除</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </section>
 
       <Modal v-model="modalShow" title="修改" 
         @on-ok="editSubmit">
-        <span>name:</span><input type="text" v-model="editParam.name"></input><br>
-        <span>age:</span><input  type="text" v-model="editParam.age"></input><br>
-        <span>sex:</span><input  type="text" v-model="editParam.sex"></input>
+        <form class="form-inline"><label >name: </label><input class="form-control" type="text"
+            v-model="editParam.name"></input></form><br>
+        <form class="form-inline"><label >age: </label><input class="form-control" type="text"
+            v-model="editParam.age"></input></form><br>
+        <form class="form-inline"><label >sex: </label><input class="form-control" type="text"
+            v-model="editParam.sex"></input></form>
       </Modal> 
       <Modal v-model="addModalShow" title="新增" 
        @on-ok="addSubmit">
-        <!-- <span>id:</span><input  type="text" v-model="addParam.id"></input><br><br> -->
-        <span>name:</span><input  type="text" v-model="addParam.name"></input ><br><br>
-        <span>age:</span><input   type="text" v-model="addParam.age"></input ><br><br>
-        <span>sex:</span><input   type="text" v-model="addParam.sex"></input >
+        <form class="form-inline"><label>name: </label><input class="form-control" type="text"
+          v-model="addParam.name"></input></form><br>
+        <form class="form-inline"><label >age: </label><input class="form-control"  type="text"
+          v-model="addParam.age"></input></form><br>
+        <form class="form-inline"><label>sex: </label><input class="form-control" type="text" 
+        v-model="addParam.sex"></input></form>
       </Modal> 
     </div>
 
