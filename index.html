@@ -30,8 +30,9 @@
   <body>
     <style>
       #app{
-       margin: 15px;
-       text-align: center;
+        width: 50rem;
+        margin: 0 auto;
+        text-align: center;
       }
       .first-section {
         padding-left: 10px;
@@ -42,6 +43,9 @@
       .title-h1{
         margin:10px auto;
       }
+      .form-inline{
+        margin:15px auto ;
+      }
     </style>
 
     <div id="app">
@@ -49,22 +53,21 @@
       
       <form class="form-inline">
         <div class="form-group mx-sm-3 mb-2">
-          <label for="inputPassword2" class="sr-only">Name</label>
-          <input type="password" class="form-control" placeholder="请输入姓名" v-model="searchName">
+          <label class="sr-only">Name</label>
+          <input type="text" class="form-control" placeholder="请输入姓名" v-model="searchName">
         </div>
-        <button type="submit" class="btn btn-primary mb-2"  @click="searchClick">查询</button> &nbsp;&nbsp;
+        <button type="button" class="btn btn-primary mb-2"  @click="searchClick">查询</button> &nbsp;&nbsp;
         <button type="button" class="btn btn-primary mb-2" @click="addClick">增加</button>
       </form>
-      <section class="first-section">
-        <table class="table table-bordered" style="width: 50rem">
-          <thead>
-            <th>序号</th>
-            <th>姓名</th>
-            <th>年龄</th>
-            <th>性别</th>
-            <th>操作</th>
-          </thead>
-          <tbody>
+      <section class="first-section" >
+        <table class="table table-bordered" style="width: 50rem" v-if="testList.length>0">
+            <tr>
+              <th>序号</th>
+              <th>姓名</th>
+              <th>年龄</th>
+              <th>性别</th>
+              <th>操作</th>
+            </tr>
             <tr v-for="(item,index) in testList">
               <td>{{index}}</td>
               <td>{{item.name}}</td>
@@ -75,8 +78,10 @@
                 <button type="button" class="btn btn-danger" @click="deleteClick(item)">删除</button>
               </td>
             </tr>
-          </tbody>
         </table>
+        <div v-else>
+          <h5>暂无数据！</h5>
+        </div>
       </section>
 
       <Modal v-model="modalShow" title="修改" 
@@ -170,6 +175,7 @@
               success: function(res) {
                 vm.addModalShow = false;
                 vm.getDataList();
+                vm.addParam = {};
               },
               error: function(err) {
                 console.log(err);

@@ -62,10 +62,12 @@ app.get("/getDataList", (req, res) => {
 
 // 增加数据
 app.post("/add", (req, res) => {
-  const user = req.body;
-  const addSql = "insert into node(name,sex,age) values(?,?,?)";
-  connection.query(addSql, user, (err, results) => {
+  const params = req.body;
+  const addSql = "insert into node(name,age,sex) values(?,?,?)";
+  const add_value = [params.name, params.age, params.sex];
+  connection.query(addSql, add_value, (err, results) => {
     if (err) {
+      console.log("err", err);
       return res.json({
         code: 1,
         message: "添加失败",
