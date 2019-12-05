@@ -20,8 +20,8 @@ app.all("*", function(req, res, next) {
 var connection = mysql.createConnection({
   host: "localhost", // 创建数据库时设置用户名
   //  port: '3306', // 数据库的端口号，如果不设置，默认是3306
-  user: "root", // 创建数据库时设置的密码
-  password: "root", // 创建的数据库
+  user: "root",
+  password: "root", // 创建数据库时设置的密码
   database: "nodeinterface" // 数据库名
 });
 
