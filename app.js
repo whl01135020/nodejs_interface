@@ -1,13 +1,12 @@
-var express = require("express");
-var app = express();
-var query = require("./db");
+// 1. 一些必须要引用的文件
+const express = require("express");
+const app = express();
 const mysql = require("mysql");
-const querystring = require("querystring");
-var bodyParser = require("body-parser");
-//引用bodyParser 这个不要忘了写
+const bodyParser = require("body-parser");
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
-//设置跨域访问
+
+// 2. 设置跨域访问
 app.all("*", function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "X-Requested-With");
@@ -16,31 +15,18 @@ app.all("*", function(req, res, next) {
   res.header("Content-Type", "application/json;charset=utf-8");
   next();
 });
-// 连接数据库的配置
+
+// 3.连接数据库的配置
 var connection = mysql.createConnection({
-  // 主机名称，一般是本机
-  host: "localhost", // 数据库的端口号，如果不设置，默认是3306 // 创建数据库时设置用户名
-  //  port: '3306',
+  host: "localhost", // 创建数据库时设置用户名
+  //  port: '3306', // 数据库的端口号，如果不设置，默认是3306
   user: "root", // 创建数据库时设置的密码
   password: "root", // 创建的数据库
-  database: "nodeinterface"
+  database: "nodeinterface" // 数据库名
 });
-// 与数据库建立连接
+
+// 4.与数据库建立连接
 connection.connect();
-//根据参数，查询数据
-app.get("/index", function(req, res) {
-  // 处理 get 请求，获取 get 请求参数
-  //处理 /:xxx 形式的 get 或 post 请求，获取请求参数 这里没有使用到
-  const params = req.query; //查询语句
-  const sql = "select * from node where name= ? and sex=?";
-  const where_value = [params.name, params.sex]; // console.log(sql)
-  connection.query(sql, where_value, function(err, result) {
-    if (err) {
-      console.log("[SELECT ERROR]:", err.message);
-    }
-    res.send(result); //数据库查询结果返回到result中,把查询数据发送到客户端
-  });
-});
 
 //查询所有数据
 app.get("/getDataList", (req, res) => {
@@ -82,6 +68,7 @@ app.post("/add", (req, res) => {
   });
 });
 
+// 修改数据
 app.post("/update", (req, res) => {
   const params = req.body;
   const sql = "update node set name=? , age=?, sex=? where id=?";
@@ -122,11 +109,13 @@ app.post("/delete", (req, res) => {
   });
 });
 
-//查询数据
+//根据条件查询数据
 app.post("/search", (req, res) => {
   const params = req.body.name;
-  const sql = "select * from node where name= ?";
-  connection.query(sql, params, (err, results) => {
+  let searchSql = params
+    ? "select * from node where name= ?"
+    : "select * from node ";
+  connection.query(searchSql, params, (err, results) => {
     if (err) {
       return res.json({
         code: 1,
